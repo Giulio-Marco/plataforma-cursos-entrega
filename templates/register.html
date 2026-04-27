@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Criar Conta{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+    <article class="auth-copy">
+        <p class="eyebrow">Cadastro</p>
+        <h1>Crie sua conta e escolha como vai usar a plataforma.</h1>
+        <p>
+            Selecione aluno para se matricular em cursos ou instrutor para publicar cursos e aulas.
+        </p>
+    </article>
+
+    <form method="POST" class="panel form-card">
+        <div class="field">
+            <label for="nome">Nome completo</label>
+            <input id="nome" type="text" name="nome" placeholder="Seu nome" required>
+        </div>
+
+        <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" name="email" placeholder="voce@email.com" required>
+        </div>
+
+        <div class="field">
+            <label for="tipo">Perfil</label>
+            <select id="tipo" name="tipo" required>
+                <option value="aluno">Aluno</option>
+                <option value="instrutor">Instrutor</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="senha">Senha</label>
+            <input id="senha" type="password" name="senha" placeholder="Minimo 6 caracteres" required>
+        </div>
+
+        <div class="field">
+            <label for="confirmar_senha">Confirmar senha</label>
+            <input id="confirmar_senha" type="password" name="confirmar_senha" placeholder="Repita a senha" required>
+        </div>
+
+        <button type="submit" class="button full">Criar conta</button>
+    </form>
+</section>
+{% endblock %}

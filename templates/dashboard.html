@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Painel{% endblock %}
+
+{% block content %}
+<section class="section-head">
+    <div>
+        <p class="eyebrow">Painel</p>
+        <h1>{{ current_user.nome }}</h1>
+    </div>
+    <span class="tag large">{{ current_user.tipo }}</span>
+</section>
+
+{% if assinatura %}
+    <section class="panel section-space">
+        <h2>Assinatura ativa</h2>
+        <p class="muted">
+            Plano {{ assinatura.plano.nome }} ate {{ assinatura.data_fim.strftime("%d/%m/%Y") }}.
+        </p>
+    </section>
+{% endif %}
+
+{% if certificados %}
+    <section class="panel section-space">
+        <h2>Certificados emitidos</h2>
+        <div class="lesson-list">
+            {% for certificado in certificados %}
+                <article class="lesson-card">
+                    <span class="lesson-index">Codigo {{ certificado.codigo_verificacao }}</span>
+                    <h3>{{ certificado.curso.titulo }}</h3>
+                    <p>Emitido em {{ certificado.data_emissao.strftime("%d/%m/%Y %H:%M") }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+
+{% if current_user.tipo == "instrutor" %}
+    <section class="panel section-space">
+        <div class="split-head">
+            <div>
+                <h2>Seus cursos</h2>
+                <p class="muted">Agora o curso usa categoria, nivel, modulos e aulas detalhadas.</p>
+            </div>
+            <a class="button" href="{{ url_for('novo_curso') }}">Novo curso</a>
+        </div>
+
+        <div class="card-grid compact">
+            {% for curso in meus_cursos %}
+                <article class="course-card">
+                    <span class="tag">{{ curso.categoria }}</span>
+                    <h3>{{ curso.titulo }}</h3>
+                    <p>{{ curso.descricao }}</p>
+                    <div class="course-meta">
+                        <span>{{ curso.nivel }}</span>
+                        <span>{{ curso.total_aulas }} aula(s)</span>
+                        <span>{{ curso.total_horas }} h</span>
+                    </div>
+                    <a class="button full" href="{{ url_for('detalhe_curso', curso_id=curso.id) }}">Gerenciar curso</a>
+                </article>
+            {% else %}
+                <article class="empty-state">
+                    <h3>Voce ainda nao publicou cursos</h3>
+                    <p>Clique em "Novo curso" para abrir sua primeira turma.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="panel section-space">
+        <h2>Criar categoria</h2>
+        <form method="POST" action="{{ url_for('nova_categoria') }}" class="editor-form">
+            <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" type="text" name="nome" placeholder="Ex.: Programacao" required>
+            </div>
+
+            <div class="field">
+                <label for="descricao">Descricao</label>
+                <textarea id="descricao" name="descricao" rows="4" placeholder="Descricao da categoria"></textarea>
+            </div>
+
+            <button type="submit" class="button">Salvar categoria</button>
+        </form>
+
+        {% if categorias %}
+            <div class="lesson-list">
+                {% for categoria in categorias %}
+                    <article class="lesson-card">
+                        <h3>{{ categoria.nome }}</h3>
+                        <p>{{ categoria.descricao or "Sem descricao." }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% else %}
+    <section class="panel section-space">
+        <div class="split-head">
+            <div>
+                <h2>Seus cursos matriculados</h2>
+                <p class="muted">Acompanhe cursos, progresso e avaliacoes.</p>
+            </div>
+            <a class="button" href="{{ url_for('index') }}">Explorar catalogo</a>
+        </div>
+
+        <div class="card-grid compact">
+            {% for curso in cursos_matriculados %}
+                <article class="course-card">
+                    <span class="tag">{{ curso.categoria }}</span>
+                    <h3>{{ curso.titulo }}</h3>
+                    <p>{{ curso.descricao }}</p>
+                    <div class="course-meta">
+                        <span>Instrutor: {{ curso.instrutor.nome }}</span>
+                        <span>{{ curso.total_aulas }} aula(s)</span>
+                        <span>{{ curso.total_horas }} h</span>
+                    </div>
+                    <a class="button full" href="{{ url_for('detalhe_curso', curso_id=curso.id) }}">Abrir curso</a>
+                </article>
+            {% else %}
+                <article class="empty-state">
+                    <h3>Voce ainda nao esta matriculado</h3>
+                    <p>Entre no catalogo e se matricule em um curso.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}{{ curso.titulo }}{% endblock %}
+
+{% block content %}
+<section class="course-hero">
+    <div>
+        <span class="tag">{{ curso.categoria }}</span>
+        <h1>{{ curso.titulo }}</h1>
+        <p class="hero-copy">{{ curso.descricao }}</p>
+
+        <div class="course-meta">
+            <span>Instrutor: {{ curso.instrutor.nome }}</span>
+            <span>Nivel: {{ curso.nivel }}</span>
+            <span>{{ curso.total_aulas }} aula(s)</span>
+            <span>{{ curso.total_horas }} h</span>
+        </div>
+
+        <div class="course-meta">
+            <span>Publicado em {{ curso.data_publicacao.strftime("%d/%m/%Y") }}</span>
+            <span>Media: {{ curso.media_avaliacoes if curso.media_avaliacoes is not none else "Sem nota" }}</span>
+        </div>
+    </div>
+
+    <aside class="panel action-box">
+        {% if not current_user.is_authenticated %}
+            <h3>Entre para continuar</h3>
+            <p class="muted">Faca login para se matricular e acessar o painel.</p>
+            <a class="button full" href="{{ url_for('login') }}">Entrar agora</a>
+
+        {% elif current_user.tipo == "aluno" %}
+            {% if matriculado %}
+                <h3>Matricula confirmada</h3>
+                <p class="muted">Marque aulas como concluidas para liberar certificado.</p>
+                <a class="button full" href="{{ url_for('dashboard') }}">Ir para o painel</a>
+            {% else %}
+                <h3>Pronto para entrar?</h3>
+                <form method="POST" action="{{ url_for('matricular', curso_id=curso.id) }}">
+                    <button type="submit" class="button full">Matricular-se</button>
+                </form>
+            {% endif %}
+
+        {% elif current_user.id == curso.instrutor_id %}
+            <h3>Voce e o instrutor</h3>
+            <p class="muted">Crie modulos e depois cadastre aulas em cada modulo.</p>
+
+        {% else %}
+            <h3>Conta de instrutor</h3>
+            <p class="muted">Contas de instrutor nao realizam matricula.</p>
+        {% endif %}
+    </aside>
+</section>
+
+<section class="panel section-space">
+    <div class="split-head">
+        <div>
+            <h2>Modulos e aulas</h2>
+            <p class="muted">Cada modulo organiza uma sequencia de aulas com tipo, URL e duracao.</p>
+        </div>
+    </div>
+
+    <div class="lesson-list">
+        {% for modulo in modulos %}
+            <article class="lesson-card">
+                <span class="lesson-index">Modulo {{ modulo.ordem }}</span>
+                <h3>{{ modulo.titulo }}</h3>
+
+                <div class="lesson-list">
+                    {% for aula in modulo.aulas|sort(attribute='ordem') %}
+                        <article class="course-card">
+                            <div class="course-meta">
+                                <span>Aula {{ aula.ordem }}</span>
+                                <span>{{ aula.tipo_conteudo }}</span>
+                                <span>{{ aula.duracao_minutos }} min</span>
+                            </div>
+
+                            <h3>{{ aula.titulo }}</h3>
+                            <p>{{ aula.url_conteudo }}</p>
+
+                            {% if current_user.is_authenticated and current_user.tipo == "aluno" and matriculado %}
+                                {% set progresso = progresso_aula(current_user.id, aula.id) %}
+                                {% if progresso and progresso.status == "Concluido" %}
+                                    <span class="tag">Concluido</span>
+                                {% else %}
+                                    <form method="POST" action="{{ url_for('concluir_aula', aula_id=aula.id) }}">
+                                        <button type="submit" class="button">Marcar como concluida</button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        </article>
+                    {% else %}
+                        <article class="empty-state">
+                            <h3>Modulo sem aulas</h3>
+                            <p>Cadastre a primeira aula neste modulo.</p>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                {% if current_user.is_authenticated and current_user.id == curso.instrutor_id %}
+                    <form method="POST" action="{{ url_for('nova_aula', modulo_id=modulo.id) }}" class="editor-form section-space">
+                        <div class="field">
+                            <label for="titulo-{{ modulo.id }}">Titulo da aula</label>
+                            <input id="titulo-{{ modulo.id }}" type="text" name="titulo" placeholder="Ex.: Introducao ao modulo" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="tipo-{{ modulo.id }}">Tipo de conteudo</label>
+                            <select id="tipo-{{ modulo.id }}" name="tipo_conteudo" required>
+                                <option value="Video">Video</option>
+                                <option value="Texto">Texto</option>
+                                <option value="Quiz">Quiz</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="url-{{ modulo.id }}">URL do conteudo</label>
+                            <input id="url-{{ modulo.id }}" type="text" name="url_conteudo" placeholder="https://..." required>
+                        </div>
+
+                        <div class="field">
+                            <label for="duracao-{{ modulo.id }}">Duracao em minutos</label>
+                            <input id="duracao-{{ modulo.id }}" type="number" name="duracao_minutos" min="1" value="10" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="ordem-aula-{{ modulo.id }}">Ordem da aula</label>
+                            <input id="ordem-aula-{{ modulo.id }}" type="number" name="ordem" min="1" value="{{ modulo.aulas|length + 1 }}" required>
+                        </div>
+
+                        <button type="submit" class="button">Salvar aula no modulo</button>
+                    </form>
+                {% endif %}
+            </article>
+        {% else %}
+            <article class="empty-state">
+                <h3>Esse curso ainda nao possui modulos</h3>
+                <p>Adicione o primeiro modulo no formulario abaixo.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+{% if current_user.is_authenticated and current_user.id == curso.instrutor_id %}
+<section class="panel section-space">
+    <h2>Adicionar modulo</h2>
+    <form method="POST" action="{{ url_for('novo_modulo', curso_id=curso.id) }}" class="editor-form">
+        <div class="field">
+            <label for="titulo-modulo">Titulo do modulo</label>
+            <input id="titulo-modulo" type="text" name="titulo" placeholder="Ex.: Fundamentos" required>
+        </div>
+
+        <div class="field">
+            <label for="ordem-modulo">Ordem</label>
+            <input id="ordem-modulo" type="number" name="ordem" min="1" value="{{ modulos|length + 1 }}" required>
+        </div>
+
+        <button type="submit" class="button">Salvar modulo</button>
+    </form>
+</section>
+{% endif %}
+
+{% if current_user.is_authenticated and current_user.tipo == "aluno" and matriculado %}
+<section class="panel section-space">
+    <h2>Sua avaliacao</h2>
+    <form method="POST" action="{{ url_for('avaliar_curso', curso_id=curso.id) }}" class="editor-form">
+        <div class="field">
+            <label for="nota">Nota</label>
+            <select id="nota" name="nota" required>
+                {% for valor in range(1, 6) %}
+                    <option value="{{ valor }}" {% if avaliacao_usuario and avaliacao_usuario.nota == valor %}selected{% endif %}>
+                        {{ valor }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="comentario">Comentario</label>
+            <textarea id="comentario" name="comentario" rows="4" placeholder="Compartilhe sua experiencia">{{ avaliacao_usuario.comentario if avaliacao_usuario else "" }}</textarea>
+        </div>
+
+        <button type="submit" class="button">Salvar avaliacao</button>
+    </form>
+</section>
+{% endif %}
+{% endblock %}

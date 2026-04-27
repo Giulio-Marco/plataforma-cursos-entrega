@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Entrar{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+    <article class="auth-copy">
+        <p class="eyebrow">Acesso</p>
+        <h1>Entre para continuar no painel.</h1>
+        <p>
+            Alunos acessam seus cursos matriculados. Instrutores gerenciam cursos e publicam aulas.
+        </p>
+    </article>
+
+    <form method="POST" class="panel form-card">
+        <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" name="email" placeholder="voce@email.com" required>
+        </div>
+
+        <div class="field">
+            <label for="senha">Senha</label>
+            <input id="senha" type="password" name="senha" placeholder="Sua senha" required>
+        </div>
+
+        <button type="submit" class="button full">Entrar</button>
+        <p class="muted center">Ainda nao tem conta? <a href="{{ url_for('register') }}">Cadastre-se</a></p>
+    </form>
+</section>
+{% endblock %}

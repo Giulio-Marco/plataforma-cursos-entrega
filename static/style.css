@@ -1,0 +1,373 @@
+:root {
+    --bg: #f6f3ea;
+    --surface: #fffdf8;
+    --surface-alt: #efe8d8;
+    --line: #d9ccb2;
+    --text: #1f1a14;
+    --muted: #6c6153;
+    --brand: #17624f;
+    --brand-dark: #0f4a3b;
+    --accent: #d98f3d;
+    --shadow: 0 18px 40px rgba(31, 26, 20, 0.09);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at top right, rgba(217, 143, 61, 0.12), transparent 28%),
+        linear-gradient(180deg, #f9f5ec 0%, #f4efe4 100%);
+    color: var(--text);
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.wrap {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(16px);
+    background: rgba(249, 245, 236, 0.86);
+    border-bottom: 1px solid rgba(217, 204, 178, 0.9);
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 0;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+}
+
+.brand-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--brand);
+    color: white;
+    font-weight: 900;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.page {
+    padding: 32px 0 56px;
+}
+
+.panel,
+.course-card,
+.lesson-card,
+.stat-card,
+.action-box,
+.empty-state {
+    background: rgba(255, 253, 248, 0.94);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+.hero,
+.course-hero,
+.auth-layout {
+    display: grid;
+    grid-template-columns: 1.3fr 0.9fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.hero {
+    padding: 22px 0 24px;
+}
+
+.hero h1,
+.course-hero h1,
+.auth-copy h1,
+.section-head h1 {
+    font-size: clamp(2rem, 4vw, 4rem);
+    line-height: 1.02;
+    margin: 10px 0 16px;
+    letter-spacing: -0.04em;
+}
+
+.hero-copy,
+.auth-copy p,
+.muted {
+    color: var(--muted);
+}
+
+.eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.78rem;
+    color: var(--brand);
+    font-weight: 700;
+}
+
+.hero-actions,
+.course-meta,
+.split-head,
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.stats-grid,
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    padding: 22px;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.panel {
+    padding: 24px;
+}
+
+.search-form,
+.editor-form {
+    display: grid;
+    gap: 18px;
+}
+
+.search-form {
+    grid-template-columns: 1.4fr 0.8fr auto;
+    align-items: end;
+}
+
+.field {
+    display: grid;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: white;
+    padding: 14px 16px;
+    font: inherit;
+    color: var(--text);
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.button,
+.link-button {
+    border: 0;
+    border-radius: 16px;
+    padding: 14px 18px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--brand);
+    color: white;
+}
+
+.button:hover,
+.link-button:hover {
+    transform: translateY(-1px);
+    opacity: 0.96;
+}
+
+.button.ghost {
+    background: transparent;
+    color: var(--brand-dark);
+    border: 1px solid var(--line);
+}
+
+.button.small {
+    padding: 10px 14px;
+}
+
+.button.full {
+    width: 100%;
+}
+
+.link-button {
+    background: transparent;
+    color: var(--text);
+    padding: 8px 10px;
+}
+
+.card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.card-grid.compact {
+    margin-top: 20px;
+}
+
+.course-card,
+.lesson-card,
+.empty-state {
+    padding: 22px;
+}
+
+.course-card h3,
+.lesson-card h3,
+.empty-state h3 {
+    margin: 12px 0 10px;
+}
+
+.course-card p,
+.lesson-card p,
+.empty-state p {
+    margin: 0 0 16px;
+    color: var(--muted);
+}
+
+.course-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: var(--surface-alt);
+    color: var(--brand-dark);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.tag.large {
+    padding: 10px 16px;
+}
+
+.action-box {
+    padding: 24px;
+}
+
+.lesson-list {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.lesson-index {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.auth-layout {
+    padding-top: 24px;
+}
+
+.auth-copy {
+    padding-top: 24px;
+}
+
+.form-card {
+    max-width: 520px;
+    width: 100%;
+}
+
+.flash-stack {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.flash {
+    padding: 14px 16px;
+    background: #edf8f4;
+    border: 1px solid #b9dccf;
+    color: var(--brand-dark);
+    border-radius: 16px;
+    font-weight: 600;
+}
+
+.section-space {
+    margin-top: 26px;
+}
+
+.center {
+    text-align: center;
+}
+
+.grow {
+    min-width: 0;
+}
+
+@media (max-width: 860px) {
+    .hero,
+    .course-hero,
+    .auth-layout,
+    .search-form,
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nav {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .nav-links {
+        width: 100%;
+    }
+}

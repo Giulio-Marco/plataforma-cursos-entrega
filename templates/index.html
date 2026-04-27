@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Catalogo de Cursos{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Plataforma funcional para alunos e instrutores</p>
+        <h1>Agora a base segue um modelo completo com categorias, modulos, aulas, trilhas e planos.</h1>
+        <p class="hero-copy">
+            Publique cursos por categoria e nivel, organize modulos, acompanhe matriculas e ofereca assinaturas.
+        </p>
+        <div class="hero-actions">
+            <a class="button" href="{{ url_for('register') }}">Comecar agora</a>
+            <a class="button ghost" href="{{ url_for('popular_demo') }}">Popular com dados demo</a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <article class="stat-card">
+            <strong>{{ destaques.total_cursos }}</strong>
+            <span>Cursos</span>
+        </article>
+        <article class="stat-card">
+            <strong>{{ destaques.total_instrutores }}</strong>
+            <span>Instrutores</span>
+        </article>
+        <article class="stat-card">
+            <strong>{{ destaques.total_alunos }}</strong>
+            <span>Alunos</span>
+        </article>
+        <article class="stat-card">
+            <strong>{{ destaques.total_matriculas }}</strong>
+            <span>Matriculas</span>
+        </article>
+    </div>
+</section>
+
+<section class="panel">
+    <form method="GET" class="search-form">
+        <div class="field grow">
+            <label for="busca">Buscar curso</label>
+            <input id="busca" type="text" name="busca" value="{{ busca }}" placeholder="Ex.: Python, SQL, iniciante">
+        </div>
+
+        <div class="field">
+            <label for="categoria">Categoria</label>
+            <select id="categoria" name="categoria">
+                <option value="">Todas</option>
+                {% for item in categorias %}
+                    <option value="{{ item.nome }}" {% if categoria_ativa == item.nome %}selected{% endif %}>{{ item.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="button">Filtrar</button>
+    </form>
+</section>
+
+<section class="section-head">
+    <div>
+        <p class="eyebrow">Cursos disponiveis</p>
+        <h2>Catalogo</h2>
+    </div>
+    <span class="muted">{{ cursos|length }} resultado(s)</span>
+</section>
+
+<section class="card-grid">
+    {% for curso in cursos %}
+        <article class="course-card">
+            <div class="course-card-top">
+                <span class="tag">{{ curso.categoria }}</span>
+                <span class="muted">{{ curso.nivel }}</span>
+            </div>
+
+            <h3>{{ curso.titulo }}</h3>
+            <p>{{ curso.descricao }}</p>
+
+            <div class="course-meta">
+                <span>Instrutor: {{ curso.instrutor.nome }}</span>
+                <span>{{ curso.total_aulas }} aula(s)</span>
+                <span>{{ curso.total_horas }} h</span>
+            </div>
+
+            <div class="course-meta">
+                <span>{{ curso.total_matriculas }} matricula(s)</span>
+                <span>Media: {{ curso.media_avaliacoes if curso.media_avaliacoes is not none else "Sem nota" }}</span>
+            </div>
+
+            <a class="button full" href="{{ url_for('detalhe_curso', curso_id=curso.id) }}">Ver curso</a>
+        </article>
+    {% else %}
+        <article class="empty-state">
+            <h3>Nenhum curso encontrado</h3>
+            <p>Tente outro filtro ou cadastre o primeiro curso como instrutor.</p>
+        </article>
+    {% endfor %}
+</section>
+
+<section class="section-head section-space">
+    <div>
+        <p class="eyebrow">Trilhas</p>
+        <h2>Trilhas cadastradas</h2>
+    </div>
+</section>
+
+<section class="card-grid compact">
+    {% for trilha in trilhas %}
+        <article class="course-card">
+            <span class="tag">{{ trilha.categoria_rel.nome }}</span>
+            <h3>{{ trilha.titulo }}</h3>
+            <p>{{ trilha.descricao }}</p>
+            <div class="course-meta">
+                <span>{{ trilha.cursos|length }} curso(s)</span>
+            </div>
+        </article>
+    {% else %}
+        <article class="empty-state">
+            <h3>Nenhuma trilha cadastrada</h3>
+            <p>Use a rota demo para ver uma trilha associada a cursos.</p>
+        </article>
+    {% endfor %}
+</section>
+
+<section class="section-head section-space">
+    <div>
+        <p class="eyebrow">Planos</p>
+        <h2>Assinaturas</h2>
+    </div>
+</section>
+
+<section class="card-grid compact">
+    {% for plano in planos %}
+        <article class="course-card">
+            <span class="tag">{{ plano.duracao_meses }} mes(es)</span>
+            <h3>{{ plano.nome }}</h3>
+            <p>{{ plano.descricao }}</p>
+            <div class="course-meta">
+                <span>R$ {{ "%.2f"|format(plano.preco) }}</span>
+            </div>
+
+            {% if current_user.is_authenticated %}
+                <form method="POST" action="{{ url_for('assinar_plano', plano_id=plano.id) }}">
+                    <button type="submit" class="button full">Assinar plano</button>
+                </form>
+            {% else %}
+                <a class="button full" href="{{ url_for('login') }}">Entrar para assinar</a>
+            {% endif %}
+        </article>
+    {% else %}
+        <article class="empty-state">
+            <h3>Nenhum plano cadastrado</h3>
+            <p>Use a base demo para ver um plano ativo.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}
